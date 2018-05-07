@@ -1,126 +1,80 @@
-(function($){
-    // Caption
-    $('.article-entry').each(function(i) {
-        $(this).find('img').filter(function (element) {
-            return $(this).hasClass('');
-        }).each(function() {
-            // add image caption
-            if (this.alt && !(!!$.prototype.justifiedGallery && $(this).parent('.justified-gallery').length)) {
-                $(this).after('<span class="caption">' + this.alt + '</span>');
-            }
+$(document).ready(function(){
 
-            if ($(this).parent().prop("tagName") !== 'A') {
-                $(this).wrap('<a href="' + ($(this).attr("data-imgbig") ? $(this).attr("data-imgbig") : this.src) + '" title="' + this.alt + '" class="gallery-item"></a>');
-            }
-        });
-    });
-    if (typeof lightGallery != 'undefined') {
-        var options = {
-            selector: '.gallery-item'
-        };
-        $('.article-entry').each(function(i, entry) {
-            lightGallery(entry, options);
-        });
-        lightGallery($('.article-gallery')[0], options);
-    }
-    if (!!$.prototype.justifiedGallery) {  // if justifiedGallery method is defined
-        var options = {
-            rowHeight: 140,
-            margins: 4,
-            lastRow: 'justify'
-        };
-        $('.justified-gallery').justifiedGallery(options);
-    }
 
-    // Profile card
-    var profileElem = $('#profile');
-    $(document).on('click', function () {
-        profileElem.removeClass('card');
-    }).on('click', '#profile-anchor', function (e) {
-        e.stopPropagation();
-        profileElem.toggleClass('card');
-    }).on('click', '.profile-inner', function (e) {
-        e.stopPropagation();
+
+    //mobile menu toggling
+    $("#menu_icon").click(function(){
+        $("header nav ul").toggleClass("show_menu");
+        $("#menu_icon").toggleClass("close_menu");
+        return false;
     });
 
-    // To Top
-    var sidebarElem = $('#sidebar'),
-        toTopElem = $('#toTop');
+    
 
-    (function () {
-        if (!sidebarElem.length) return;
+    //Contact Page Map Centering
+    var hw = $('header').width() + 50;
+    var mw = $('#map').width();
+    var wh = $(window).height();
+    var ww = $(window).width();
 
-        checkDisplayToTop();
-        $(document).on('scroll', function () {
-            checkDisplayToTop();
+    $('#map').css({
+        "max-width" : mw,
+        "height" : wh
+    });
+
+    if(ww>1100){
+         $('#map').css({
+            "margin-left" : hw
         });
+    }
 
-        toTopElem.click(function () {
-            $('body, html').animate({ scrollTop: 0 }, 600);
-        });
+   
 
-        var isToTopDisplayed = false;
-        function checkDisplayToTop() {
-            var toTop = (sidebarElem.height() - $(window).height()) + 60;
-            var currentScrollTop = $(document).scrollTop();
-            var needDisplay = (currentScrollTop > toTop) && (currentScrollTop > 0);
 
-            if ($(document).width() >= 800) {
-                if (needDisplay) {
-                    if (isToTopDisplayed) return;
-                    toTopElem.fadeIn();
-                    toTopElem.css('left', sidebarElem.offset().left);
-                    isToTopDisplayed = true;
-                } else {
-                    if (!isToTopDisplayed) return;
-                    toTopElem.fadeOut();
-                    isToTopDisplayed = false;
-                }
-            } else {
-                toTopElem.show();
-                toTopElem.css('right', 20);
-            }
+
+    //Tooltip
+    $("a").mouseover(function(){
+
+        var attr_title = $(this).attr("data-title");
+
+        if( attr_title == undefined || attr_title == "") return false;
+        
+        $(this).after('<span class="tooltip"></span>');
+
+        var tooltip = $(".tooltip");
+        tooltip.append($(this).data('title'));
+
+         
+        var tipwidth = tooltip.outerWidth();
+        var a_width = $(this).width();
+        var a_hegiht = $(this).height() + 3 + 4;
+
+        //if the tooltip width is smaller than the a/link/parent width
+        if(tipwidth < a_width){
+            tipwidth = a_width;
+            $('.tooltip').outerWidth(tipwidth);
         }
-    })();
 
-    // Fixed Profile
-    (function () {
-        checkFixedProfile();
-        $(document).on('scroll', function () {
-            checkFixedProfile();
-        });
+        var tipwidth = '-' + (tipwidth - a_width)/2;
+        $('.tooltip').css({
+            'left' : tipwidth + 'px',
+            'bottom' : a_hegiht + 'px'
+        }).stop().animate({
+            opacity : 1
+        }, 200);
+       
 
-        var isFixedProfile = false;
-        function checkFixedProfile() {
-            if (!profileElem.is('.profile-fixed')) return;
-            if ($(document).width() < 800) return;
+    });
 
-            var currentScrollTop = $(document).scrollTop();
-            var profileInnerElem = $('#profile .profile-inner');
-            var needFixed = currentScrollTop >= profileElem.offset().top + profileElem.outerHeight(true);
+    $("a").mouseout(function(){
+        var tooltip = $(".tooltip");       
+        tooltip.remove();
+    });
 
-            if (needFixed) {
-                if (isFixedProfile) return;
 
-                profileInnerElem.css('position', 'fixed')
-                    .css('width', profileElem.innerWidth() + 'px')
-                    .css('top', '0');
+});
 
-                // css animation fade-in
-                profileInnerElem.css('animation', '');
-                profileInnerElem.addClass('anim-fade-in');
-                isFixedProfile = true;
-            } else {
-                if (!isFixedProfile) return;
 
-                profileInnerElem.css('position', '')
-                    .css('width', '')
-                    .css('top', '');
 
-                profileInnerElem.css('animation', 'none');
-                isFixedProfile = false;
-            }
-        }
-    })();
 
-})(jQuery);
+
